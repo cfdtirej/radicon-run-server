@@ -1,0 +1,25 @@
+version: '3'
+services:
+  influxdb:
+    image: influxdb:1.8.3
+    ports:
+      - '18086:8086'
+    volumes:
+      - ./influxdb/data:/var/lib/influxdb
+    restart: always
+  
+  grafana:
+    image: grafana/grafana
+    ports:
+      - '13000:3000'
+    volumes:
+      - grafana:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+    depends_on:
+      - influxdb
+    restart: always
+
+volumes:
+  influxdb:
+  grafana:
