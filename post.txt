@@ -1,1 +1,1 @@
-curl http://locahost:25000/ -X POST -H "Content-type: application/json"  -d '{"Key": "Value"}'  
+curl http://localhost:3000/ -X POST -H "Content-type: application/json"  -d '{"Key": "Value"}'  

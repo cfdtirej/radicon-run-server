@@ -11,6 +11,7 @@ app = Flask(__name__)
 @app.route('/', methods=['POST'])
 def home():
     req = request.get_json()
+    print(req)
     return req
 
 
