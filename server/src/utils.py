@@ -4,7 +4,7 @@ from influxdb import InfluxDBClient
 
 
 class IoTPoleDBClient(InfluxDBClient):
-
+    
     def write_data(self, data: dict) -> None:
         self.client.write_points(data)
 
@@ -70,7 +70,3 @@ class IoTPoleDBClient(InfluxDBClient):
                                                         np.sinh(2*eta2*np.arange(1,6)))))) # [m]
         # return
         return {'x': x, 'y': y} # [m]
-
-if __name__ == '__main__':
-    pass
-

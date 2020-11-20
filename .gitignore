@@ -1,7 +1,7 @@
 *__pycache__
 .idea
 
-config.yaml
+/server/src/config.yaml
 
 database/influxdb
 database/grafana
