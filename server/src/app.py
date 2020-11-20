@@ -1,10 +1,9 @@
 import os
-from influxdb.client import InfluxDBClient
 
 import yaml
 from flask import Flask, jsonify, request
 
-from utils import IoTPoleDBClient
+from utils import IoTPoleDBClient, calc_xy
 
 
 config_yaml = os.path.join(os.path.dirname(__file__), 'config.yaml')
@@ -20,6 +19,15 @@ client = IoTPoleDBClient(
     password=conf['InfluxDB']['password'],
     database=conf['InfluxDB']['database']
 )
+
+def to_lineProtocol(data: dict) -> dict:
+    line_protocol = {
+        'measurement': None,
+        'time': None,
+        'tags': {'id':None},
+        'fields': {'key': 'value'}
+    }   
+    return line_protocol
 
 @app.route('/', methods=['POST'])
 def home():
