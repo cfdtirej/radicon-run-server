@@ -1,3 +1,4 @@
+from datetime import date, datetime
 from typing import Dict
 
 import numpy as np
@@ -83,16 +84,13 @@ def poleID_dist_m(data: list) -> dict:
 
 class IoTPoleDBClient(InfluxDBClient):
 
-    def write_data(self, data: list) -> None:
-        self.client.write_points(data)
-
     @classmethod
-    def req_json_to_linePlotocol(cls, request_json: dict) -> list:
+    def req_json_to_line_plotocol(cls, request_json: dict) -> list:
         GNSS_RTK_xy = calc_xy(request_json['Position']['GNSS-RTK']['Latitude_deg'],
                               request_json['Position']['GNSS-RTK']['Longitute_deg'])
         WiFi_RTT_dist = poleID_dist_m(request_json['Position']['WiFi-RTT'])
         line_protocol = [{
-            'time': request_json['DateTime'],
+            'time': datetime.strptime(request_json['DateTime']+'+0900', '%Y/%m/%d %H:%M:%S.%f%z').isoformat(),
             'measurement': 'mobile',
             'tag': {
                 'CarID': request_json['CarID']
