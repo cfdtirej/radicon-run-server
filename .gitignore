@@ -1,6 +1,8 @@
 *__pycache__
 .idea
 
+test
+
 config.yaml
 
 database/influxdb
