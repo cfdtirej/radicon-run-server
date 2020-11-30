@@ -4,9 +4,10 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
+    container_name: radicon-run-server
     ports:
       - "25000:5000"
     volumes:
-      - ./server/src:/usr/src
+      - ./server/src:/src/
     tty: true
   

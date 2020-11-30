@@ -1,12 +1,18 @@
 FROM python:latest
 
-WORKDIR /usr/src/app
+WORKDIR /src
 
-RUN apt-get update && apt-get upgrade -y
+# RUN apt-get update && apt-get upgrade -y
 
-RUN apt-get install -y vim
+# RUN apt-get install -y vim
+
+COPY ./requirements.txt .
 
 RUN pip install --upgrade pip
-RUN pip install Flask PyYAML
+RUN pip install -r requirements.txt
+
+COPY ./src/ .
 
 EXPOSE 5000
+
+CMD ["python", "app.py"]
