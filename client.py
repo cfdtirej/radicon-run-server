@@ -34,5 +34,7 @@ def send(url, data):
     print(res.json())
 
 if __name__ == '__main__':
-    url = 'http://127.0.0.1:13000/'
+    host = 'http://127.0.0.1'
+    port = 3000
+    url = f'{host}:{port}/'
     send(url, sample_json)
