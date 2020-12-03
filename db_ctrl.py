@@ -9,7 +9,7 @@ client = InfluxDBClient(
     port=18086,
     username='root',
     password='root',
-    database='IoT_Pole',
+    database='IoTPole',
 )
 
 data = client.query(ql)
