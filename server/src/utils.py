@@ -81,7 +81,13 @@ def poleID_dist_m(data: list) -> dict:
         pole_dist_m[key] = pole_dist['Distance_m']
     return pole_dist_m
 
-
+def to_rfc3339(dt):
+    try:
+        dt_3339 = datetime.strptime(dt+'+0900', '%Y/%m/%d %H:%M:%S.%f%z').isoformat()
+        return dt_3339
+    except ValueError:
+        dt_3339 = datetime.strptime(dt+'+0900', '%Y-%m-%d %H:%M:%S.%f%z').isoformat()
+        return dt_3339
 class IoTPoleDBClient(InfluxDBClient):
 
     @classmethod
@@ -90,7 +96,7 @@ class IoTPoleDBClient(InfluxDBClient):
                               request_json['Position']['GNSS-RTK']['Longitute_deg'])
         WiFi_RTT_dist = poleID_dist_m(request_json['Position']['WiFi-RTT'])
         line_protocol = [{
-            'time': datetime.strptime(request_json['DateTime']+'+0900', '%Y/%m/%d %H:%M:%S.%f%z').isoformat(),
+            'time': to_rfc3339(request_json['DateTime']),
             'measurement': 'mobile',
             'tag': {
                 'CarID': request_json['CarID']
