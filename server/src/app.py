@@ -20,12 +20,16 @@ with open(config_yaml, 'r') as f:
 app = Flask(__name__)
 
 
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['GET', 'POST'])
 def home():
-    req = request.get_json()
-    line_protocol = client.req_json_to_line_plotocol(req)
-    client.write_points(line_protocol)
-    return jsonify(line_protocol)
+    if request.method == "GET":
+        res = list(client.query("SELECT * FROM mobile"))[0]
+        return jsonify({'Data':res})
+    elif request.method == 'POST':
+        req = request.get_json()
+        line_protocol = client.req_json_to_line_plotocol(req)
+        client.write_points(line_protocol)
+        return jsonify(line_protocol)
 
 
 if __name__ == '__main__':
