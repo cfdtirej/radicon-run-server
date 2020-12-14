@@ -1,0 +1,19 @@
+{
+  "AP Pos" : [
+    {
+      "MAC Addr " : "ac:67:5d:87:75:4e",
+      "Pole id " : 1,
+      "Position " : [32303.4, -46486.4]
+    },
+    {
+      "MAC Addr " : "ac:67:5d:87:75:94",
+      "Pole id " : 2,
+      "Position " : [32283.4, -46457.1]
+    },
+    {
+      "MAC Addr " : "ac:67:5d:87:75:e9",
+      "Pole id " : 3,
+      "Position " : [32267.7, -46473.8]
+    }
+  ]
+}
