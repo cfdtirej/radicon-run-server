@@ -1,3 +1,4 @@
+from os import error
 from client import send
 import glob
 import json
@@ -29,7 +30,10 @@ def format_log_old_ver(log_file: str) -> List[dict]:
 def send_log(url: str, data_list: List[dict]):
     for data in data_list:
         res = requests.post(url, json=data)
-        print(res)
+        try:
+            print(res, res.json())
+        except Exception:
+            print(res)
 
 
 if __name__ == '__main__':

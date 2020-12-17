@@ -1,7 +1,7 @@
 import os
 
 import yaml
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, abort
 
 from utils import IoTPoleDBClient
 
@@ -27,10 +27,12 @@ def home():
         return jsonify({'Data':res})
     elif request.method == 'POST':
         req = request.get_json()
-        line_protocol = client.req_json_to_line_plotocol(req)
-        client.write_points(line_protocol)
-        return jsonify(line_protocol)
-
+        try:
+            line_protocol = client.req_json_to_line_plotocol(req)
+            client.write_points(line_protocol)
+            return jsonify(line_protocol)
+        except Exception as e:
+            return jsonify({'message': f'{e}'}), 500
 
 if __name__ == '__main__':
     app.run(
