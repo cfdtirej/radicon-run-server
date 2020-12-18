@@ -24,15 +24,17 @@ app = Flask(__name__)
 def home():
     if request.method == "GET":
         res = list(client.query("SELECT * FROM mobile"))[0]
-        return jsonify({'Data':res})
+        return jsonify({'Data': res})
     elif request.method == 'POST':
         req = request.get_json()
         try:
             line_protocol = client.req_json_to_line_plotocol(req)
-            client.write_points(line_protocol)
+            # client.write_points(line_protocol)
+            print(line_protocol)
             return jsonify(line_protocol)
         except Exception as e:
             return jsonify({'message': f'{e}'}), 500
+
 
 if __name__ == '__main__':
     app.run(
