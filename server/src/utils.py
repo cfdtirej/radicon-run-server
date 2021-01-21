@@ -14,7 +14,7 @@ def calc_xy(phi_deg, lambda_deg, phi0_deg=36.0, lambda0_deg=137.0 + 10/60) -> Di
     lambda_rad = np.deg2rad(lambda_deg)
     phi0_rad = np.deg2rad(phi0_deg)
     lambda0_rad = np.deg2rad(lambda0_deg)
-    
+
     # 補助関数
     def A_array(n):
         A0 = 1 + (n**2)/4. + (n**4)/64.
@@ -66,6 +66,7 @@ def calc_xy(phi_deg, lambda_deg, phi0_deg=36.0, lambda0_deg=137.0 + 10/60) -> Di
                                                     np.sinh(2*eta2*np.arange(1, 6))))))  # [m]
     return {'x': x, 'y': y}
 
+
 def gps_solve(distances_to_station, stations_coordinates):
     def error(x, c, r):
         return sum([(np.linalg.norm(x - c[i]) - r[i]) ** 2 for i in range(len(c))])
@@ -79,20 +80,26 @@ def gps_solve(distances_to_station, stations_coordinates):
     # optimize distance from signal origin to border of spheres
     return minimize(error, x0, args=(stations_coordinates, distances_to_station), method='Nelder-Mead').x
 
-APPOS_JSON = os.path.join(os.path.dirname(__file__), 'APPOS.json')
-def multilateration(wifi_rtt: List[Dict[str, Union[int, float]]]) -> Dict[str, float]:
-	distances_to_station = []
-	for idx in range(1, 4):
-		for pole_info in wifi_rtt:
-			if pole_info['PoleID'] == idx:
-				distances_to_station.append(pole_info['Distance_m'])
-	with open(APPOS_JSON, 'r') as f:
-		appos = json.load(f)['AP Pos']
-		appos_lists: List[List[float, float]]  = [ap['Position '] for ap in appos]
-		stations: List[np.ndarray[np.float, np.float]] = list(np.array(appos_lists))
 
-	coordinate = gps_solve(distances_to_station, stations)
-	return {'x': coordinate[0], 'y': coordinate[1]}
+APPOS_JSON = os.path.join(os.path.dirname(__file__), 'APPOS.json')
+
+
+def multilateration(wifi_rtt: List[Dict[str, Union[int, float]]]) -> Dict[str, float]:
+    distances_to_station = []
+    for idx in range(1, 4):
+        for pole_info in wifi_rtt:
+            if pole_info['PoleID'] == idx:
+                distances_to_station.append(pole_info['Distance_m'])
+    with open(APPOS_JSON, 'r') as f:
+        appos = json.load(f)['AP Pos']
+        appos_lists: List[List[float, float]] = [
+            ap['Position '] for ap in appos]
+        stations: List[np.ndarray[np.float, np.float]] = list(
+            np.array(appos_lists))
+
+    coordinate = gps_solve(distances_to_station, stations)
+    return {'x': coordinate[0], 'y': coordinate[1]}
+
 
 def poleID_dist_m(data: List[Dict[str, Union[int, float]]]) -> Dict[str, float]:
     '''
@@ -111,12 +118,15 @@ def poleID_dist_m(data: List[Dict[str, Union[int, float]]]) -> Dict[str, float]:
         pole_dist_m[key] = pole_dist['Distance_m']
     return pole_dist_m
 
+
 def to_rfc3339(dt):
     try:
-        dt_3339 = datetime.strptime(dt+'+0900', '%Y/%m/%d %H:%M:%S.%f%z').isoformat()
+        dt_3339 = datetime.strptime(
+            dt+'+0900', '%Y/%m/%d %H:%M:%S.%f%z').isoformat()
         return dt_3339
     except ValueError:
-        dt_3339 = datetime.strptime(dt+'+0900', '%Y-%m-%d %H:%M:%S.%f%z').isoformat()
+        dt_3339 = datetime.strptime(
+            dt+'+0900', '%Y-%m-%d %H:%M:%S.%f%z').isoformat()
         return dt_3339
 
 
@@ -127,6 +137,7 @@ class IoTPoleDBClient(InfluxDBClient):
         GNSS_RTK_xy = calc_xy(request_json['Position']['GNSS-RTK']['Latitude_deg'],
                               request_json['Position']['GNSS-RTK']['Longitute_deg'])
         WiFi_RTT_xy = multilateration(request_json['Position']['WiFi-RTT'])
+        WiFi_RTT_dist = poleID_dist_m(request_json['Position']['WiFi-RTT'])
         line_protocol = [{
             'time': to_rfc3339(request_json['DateTime']),
             'measurement': 'mobile',
@@ -139,6 +150,9 @@ class IoTPoleDBClient(InfluxDBClient):
                 'Quality': request_json['Position']['GNSS-RTK']['Quality'],
                 'WiFi_RTT_x': WiFi_RTT_xy['x'],
                 'WiFi_RTT_y': WiFi_RTT_xy['y'],
+                'pole1_dist_m': WiFi_RTT_dist['pole1_dist_m'],
+                'pole2_dist_m': WiFi_RTT_dist['pole2_dist_m'],
+                'pole3_dist_m': WiFi_RTT_dist['pole3_dist_m'],
                 'Azimuth_deg': request_json['Azimuth_deg'],
                 'Speed_level': request_json['Speed_level'],
                 'Steering_level': request_json['Steering_level'],
