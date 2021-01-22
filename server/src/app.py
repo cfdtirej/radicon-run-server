@@ -1,4 +1,7 @@
+import json
 import os
+from pathlib import Path
+from datetime import date
 
 import yaml
 from flask import Flask, jsonify, request, abort
@@ -27,9 +30,16 @@ def home():
         return jsonify({'Data': res})
     elif request.method == 'POST':
         req = request.get_json()
+        DATE = date.today().isoformat().replace('-', '')
+        post_log = Path(__file__).parents[2]/'post_log'/f'{DATE}_post_json'
+        if not post_log.parent.is_dir():
+            post_log.parent.mkdir()
+        with open(post_log, 'a') as f:
+            write_json = json.dumps(req, indent=4)
+            f.write(f'{write_json},')
         try:
             line_protocol = client.req_json_to_line_plotocol(req)
-            # client.write_points(line_protocol)
+            client.write_points(line_protocol)
             print(line_protocol)
             return jsonify(line_protocol)
         except Exception as e:
