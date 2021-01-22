@@ -37,8 +37,8 @@ def home():
         with open(post_log, 'a') as f:
             write_json = json.dumps(req, indent=4)
             f.write(f'{write_json},')
+        line_protocol = client.req_json_to_line_plotocol(req)
         try:
-            line_protocol = client.req_json_to_line_plotocol(req)
             client.write_points(line_protocol)
             print(line_protocol)
             return jsonify(line_protocol)
