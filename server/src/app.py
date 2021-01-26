@@ -6,6 +6,8 @@ from datetime import date
 import yaml
 from flask import Flask, jsonify, request, abort
 
+import rrt1
+import sokuchi_field
 from utils import IoTPoleDBClient
 
 
@@ -45,6 +47,19 @@ def home():
         except Exception as e:
             return jsonify({'message': f'{e}'}), 500
 
+@app.route('/sokuchi')
+def hello():
+    car_id = request.args.get('car_id')
+    dt = request.args.get('date')
+    data = list(client.query(f"SELECT * FROM mobile WHERE time = '{dt}'"))[0][0]
+    sokuchi_x = (data["GRSS_RTK_x"])
+    sokuchi_y = (data["GRSS_RTK_y"])
+    a, b = sokuchi_field.sokuchi_field(sokuchi_x,sokuchi_y)
+    field_x = a
+    field_y = b
+    # time.sleep(10)
+    # return jsonify(create_json.create_json(Car_ID, DateTime))
+    return jsonify(rrt1.main(car_id, dt, field_x, field_y))
 
 if __name__ == '__main__':
     app.run(
