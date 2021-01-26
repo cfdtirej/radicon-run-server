@@ -26,7 +26,7 @@ app = Flask(__name__)
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if request.method == "GET":
-        res = list(client.query("SELECT * FROM mobile"))[0]
+        res = list(client.query("SELECT * FROM mobile ORDER BY DESC LIMIT 10"))[0]
         return jsonify({'Data': res})
     elif request.method == 'POST':
         req = request.get_json()
