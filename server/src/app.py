@@ -25,20 +25,36 @@ with open(config_yaml, 'r') as f:
 app = Flask(__name__)
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
+def home():
+    res = list(client.query("SELECT * FROM mobile ORDER BY DESC LIMIT 10"))[0]
+    return jsonify({'Data': res})
+
+
+@app.route('/car', methods=['GET', 'POST'])
 def home():
     if request.method == "GET":
-        res = list(client.query("SELECT * FROM mobile ORDER BY DESC LIMIT 10"))[0]
-        return jsonify({'Data': res})
+        car_id = request.args.get('car_id')
+        data = list(client.query('SELECT * FROM mobile LIMIT 1'))[0][0]
+        sokuchi_x = (data["GRSS_RTK_x"])
+        sokuchi_y = (data["GRSS_RTK_y"])
+        dt = (data["time"])
+        a, b = sokuchi_field.sokuchi_field(sokuchi_x,sokuchi_y)
+        field_x = a
+        field_y = b
+        return jsonify(rrt1.main(car_id, dt, field_x, field_y))
+
     elif request.method == 'POST':
         req = request.get_json()
+        # post jsonを記録（日毎）
         DATE = date.today().isoformat().replace('-', '')
-        post_log = Path(__file__).parents[2]/'post_log'/f'{DATE}_post_json'
+        post_log = Path(__file__).parents[2]/'post_log'/'car'/f'{DATE}_post_json'
         if not post_log.parent.is_dir():
             post_log.parent.mkdir()
         with open(post_log, 'a') as f:
             write_json = json.dumps(req, indent=4)
-            f.write(f'{write_json},')
+            f.write(f'{write_json},\n')
+        # 座標変換＋DBに記録
         line_protocol = client.req_json_to_line_plotocol(req)
         try:
             client.write_points(line_protocol)
@@ -47,14 +63,29 @@ def home():
         except Exception as e:
             return jsonify({'message': f'{e}'}), 500
 
+
+@app.route('/pole', methods=['POST'])
+def pole():
+    if request.method == 'POST':
+        req = request.get_json()
+        # post jsonを記録（日毎）
+        DATE = date.today().isoformat().replace('-', '')
+        post_log = Path(__file__).parents[2]/'post_log'/'car'/f'{DATE}_post_json'
+        if not post_log.parent.is_dir():
+            post_log.parent.mkdir()
+        with open(post_log, 'a') as f:
+            write_json = json.dumps(req, indent=4)
+            f.write(f'{write_json},\n')
+        # 座標変換＋DBに記録
+        
+    return jsonify()
+
+
+
 @app.route('/sokuchi')
 def hello():
     car_id = request.args.get('car_id')
-    # dt = request.args.get('date')
-    # dt_str = str(dt).replace(" ", "T")
-    # data = list(client.query(f"SELECT * FROM mobile WHERE time <= '{dt_str}Z' ORDER BY DESC LIMIT 1"))[0][0]
     data = list(client.query('SELECT * FROM mobile LIMIT 1'))[0][0]
-    # data = list(client.query(''))
     sokuchi_x = (data["GRSS_RTK_x"])
     sokuchi_y = (data["GRSS_RTK_y"])
     dt = (data["time"])

@@ -8,6 +8,9 @@ import numpy as np
 from influxdb import InfluxDBClient
 
 
+APPOS_JSON = os.path.join(os.path.dirname(__file__), 'APPOS.json')
+
+
 def calc_xy(phi_deg, lambda_deg, phi0_deg=36.0, lambda0_deg=137.0 + 10/60) -> Dict[str, float]:
     # 緯度経度・平面直角座標系原点をラジアンに直す
     phi_rad = np.deg2rad(phi_deg)
@@ -79,9 +82,6 @@ def gps_solve(distances_to_station, stations_coordinates):
 
     # optimize distance from signal origin to border of spheres
     return minimize(error, x0, args=(stations_coordinates, distances_to_station), method='Nelder-Mead').x
-
-
-APPOS_JSON = os.path.join(os.path.dirname(__file__), 'APPOS.json')
 
 
 def multilateration(wifi_rtt: List[Dict[str, Union[int, float]]]) -> Dict[str, float]:
@@ -160,6 +160,10 @@ class IoTPoleDBClient(InfluxDBClient):
             }
         }]
         return line_protocol
+    
+    @classmethod
+    def req_pole_lineprotocol(cls, reqest_json: dict) -> List:
+        return 
 
     @classmethod
     def req_json_to_line_plotocol_old_version(cls, request_json: dict) -> list:
@@ -186,3 +190,4 @@ class IoTPoleDBClient(InfluxDBClient):
             }
         }]
         return line_protocol
+        
