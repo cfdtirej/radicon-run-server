@@ -264,10 +264,10 @@ class Figures():
         return circle_x, circle_y
 
 
-def main(Car_ID, DateTime, sokuchi_x, sokuchi_y):
+def main(car_id, timestamp, sokuchi_x, sokuchi_y):
     # figures
-    figure = Figures()
-    figure.fig_set()
+    # figure = Figures()
+    # figure.fig_set()
 
 
     # pathmake
@@ -300,12 +300,10 @@ def main(Car_ID, DateTime, sokuchi_x, sokuchi_y):
     # print(final_path)
 
     point = {
-        "Car_ID":Car_ID,
-        "DateTime":DateTime,
+        "Car_ID":car_id,
+        "DateTime":timestamp,
         "WayPoint":[
-            {
-                'data': [{'x': d[0], 'y': d[1]} for d in final_path]
-            }
+            {'x': d[1], 'y': d[0]} for d in final_path
         ]
     }
 

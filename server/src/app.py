@@ -50,10 +50,14 @@ def home():
 @app.route('/sokuchi')
 def hello():
     car_id = request.args.get('car_id')
-    dt = request.args.get('date')
-    data = list(client.query(f"SELECT * FROM mobile WHERE time = '{dt}'"))[0][0]
+    # dt = request.args.get('date')
+    # dt_str = str(dt).replace(" ", "T")
+    # data = list(client.query(f"SELECT * FROM mobile WHERE time <= '{dt_str}Z' ORDER BY DESC LIMIT 1"))[0][0]
+    data = list(client.query('SELECT * FROM mobile LIMIT 1'))[0][0]
+    # data = list(client.query(''))
     sokuchi_x = (data["GRSS_RTK_x"])
     sokuchi_y = (data["GRSS_RTK_y"])
+    dt = (data["time"])
     a, b = sokuchi_field.sokuchi_field(sokuchi_x,sokuchi_y)
     field_x = a
     field_y = b
