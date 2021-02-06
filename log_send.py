@@ -37,7 +37,7 @@ def send_log(url: str, data_list: List[dict]):
 
 
 if __name__ == '__main__':
-    url = 'http://127.0.0.1:13000/'
+    url = 'http://127.0.0.1:5000/car'
     log_files = glob.glob('./log_post/*')
     for log_file in log_files:
         send_log(url, data_list=format_log_old_ver(log_file))

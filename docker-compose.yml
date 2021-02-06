@@ -1,13 +1,11 @@
 version: "3"
 services:
   server: 
-    build:
-      context: ./server
-      dockerfile: Dockerfile
+    build: server/.
     container_name: radicon-run-server
     ports:
-      - "25000:5000"
+      - 3000:5000
     volumes:
-      - ./server/src:/src/
+      - ./server/src:/usr/src
     tty: true
-  
+    restart: always

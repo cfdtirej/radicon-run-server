@@ -38,5 +38,5 @@ def send(url, data):
 if __name__ == '__main__':
     host = 'http://127.0.0.1'
     port = 5000
-    url = f'{host}:{port}/'
+    url = f'{host}:{port}/car'
     send(url, sample_json)

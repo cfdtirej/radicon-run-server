@@ -1,7 +1,35 @@
 from datetime import datetime
+from typing import List, Dict, Any, Optional, Union
+from dataclasses import dataclass, asdict
 
 
-car_post = \
+@dataclass
+class GNSS_RTK:
+    Latitude_deg: float
+    Longitute_deg: float
+    Quality: int
+
+@dataclass
+class WiFi_RTK:
+    PoleID: int
+    Distance_m: float
+
+@dataclass
+class Position:
+    GNSS_RTK: GNSS_RTK
+    WiFi_RTK: List[WiFi_RTK]
+
+@dataclass
+class CarPost:
+    CarID: int
+    DateTime: str
+    Position: Position
+    Azimuth_deg: int
+    Speed_level: int
+    Steering_level: int
+    ObstacleDistance_m: float
+  
+car_post: CarPost = \
 {
     "CarID": 1,
     "DateTime": '2021/1/1 10:15:20.223',
@@ -32,7 +60,21 @@ car_post = \
     "ObstacleDistance_m": 2.432
 }
 
-pole_post = \
+
+@dataclass
+class COM1:
+    Object_name: int
+    Size: int
+    Distance: int
+    Angle: int
+
+@dataclass
+class PolePost:
+    poleID: int
+    DateTime: str
+    Position: Dict[str, COM1]
+
+pole_post: PolePost = \
 {
     'poleID': 1,
     'DateTime': '2021-02-05 17:44:58.543414',
@@ -45,4 +87,8 @@ pole_post = \
         }
     }
 }
-print(datetime.now())
+
+print(CarPost(**car_post))
+print(PolePost(**pole_post))
+car_post_s = CarSchem(**car_post)
+print(asdict(car_post_s))

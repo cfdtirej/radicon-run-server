@@ -8,19 +8,14 @@ from flask import Flask, jsonify, request, abort
 
 import rrt1
 import sokuchi_field
+import post_schemas
 from utils import IoTPoleDBClient
 
 
 config_yaml = os.path.join(os.path.dirname(__file__), 'config.yaml')
 with open(config_yaml, 'r') as f:
     conf = yaml.safe_load(f)
-    client = IoTPoleDBClient(
-        host=conf['InfluxDB']['host'],
-        port=conf['InfluxDB']['port'],
-        username=conf['InfluxDB']['username'],
-        password=conf['InfluxDB']['password'],
-        database=conf['InfluxDB']['database']
-    )
+    client = IoTPoleDBClient(**conf['InfluxDB'])
 
 app = Flask(__name__)
 
@@ -32,7 +27,7 @@ def home():
 
 
 @app.route('/car', methods=['GET', 'POST'])
-def home():
+def car():
     if request.method == "GET":
         car_id = request.args.get('car_id')
         data = list(client.query('SELECT * FROM mobile LIMIT 1'))[0][0]
@@ -45,10 +40,10 @@ def home():
         return jsonify(rrt1.main(car_id, dt, field_x, field_y))
 
     elif request.method == 'POST':
-        req = request.get_json()
+        req: post_schemas.CarPost = request.get_json()
         # post jsonを記録（日毎）
         DATE = date.today().isoformat().replace('-', '')
-        post_log = Path(__file__).parents[2]/'post_log'/'car'/f'{DATE}_post_json'
+        post_log = Path(__file__).parents[2]/'car_log'/f'{DATE}_post_json'
         if not post_log.parent.is_dir():
             post_log.parent.mkdir()
         with open(post_log, 'a') as f:
@@ -58,7 +53,6 @@ def home():
         line_protocol = client.req_json_to_line_plotocol(req)
         try:
             client.write_points(line_protocol)
-            print(line_protocol)
             return jsonify(line_protocol)
         except Exception as e:
             return jsonify({'message': f'{e}'}), 500
@@ -70,7 +64,7 @@ def pole():
         req = request.get_json()
         # post jsonを記録（日毎）
         DATE = date.today().isoformat().replace('-', '')
-        post_log = Path(__file__).parents[2]/'post_log'/'car'/f'{DATE}_post_json'
+        post_log = Path(__file__).parents[2]/'pole_log'/f'{DATE}_post_json'
         if not post_log.parent.is_dir():
             post_log.parent.mkdir()
         with open(post_log, 'a') as f:
@@ -97,8 +91,4 @@ def hello():
     return jsonify(rrt1.main(car_id, dt, field_x, field_y))
 
 if __name__ == '__main__':
-    app.run(
-        host=conf['Server']['host'],
-        port=conf['Server']['port'],
-        debug=True
-    )
+    app.run(**conf['dev'])
