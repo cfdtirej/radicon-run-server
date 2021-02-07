@@ -43,35 +43,39 @@ def car():
         req: post_schemas.CarPost = request.get_json()
         # post jsonを記録（日毎）
         DATE = date.today().isoformat().replace('-', '')
-        post_log = Path(__file__).parents[2]/'car_log'/f'{DATE}_post_json'
+        post_log = Path(__file__).parents[2]/'car_log'/f'{DATE}_post'
         if not post_log.parent.is_dir():
             post_log.parent.mkdir()
         with open(post_log, 'a') as f:
             write_json = json.dumps(req, indent=4)
             f.write(f'{write_json},\n')
         # 座標変換＋DBに記録
-        line_protocol = client.req_json_to_line_plotocol(req)
         try:
+            line_protocol = client.req_json_to_line_plotocol(req)
             client.write_points(line_protocol)
             return jsonify(line_protocol)
         except Exception as e:
-            return jsonify({'message': f'{e}'}), 500
+            return jsonify({'error': f'{e}'}), 500
 
 
 @app.route('/pole', methods=['POST'])
 def pole():
     if request.method == 'POST':
-        req = request.get_json()
+        req: post_schemas.PolePost = request.get_json()
         # post jsonを記録（日毎）
         DATE = date.today().isoformat().replace('-', '')
-        post_log = Path(__file__).parents[2]/'pole_log'/f'{DATE}_post_json'
+        post_log = Path(__file__).parents[2]/'pole_log'/f'{DATE}_post'
         if not post_log.parent.is_dir():
             post_log.parent.mkdir()
         with open(post_log, 'a') as f:
             write_json = json.dumps(req, indent=4)
             f.write(f'{write_json},\n')
         # 座標変換＋DBに記録
-        
+        try:
+            line_protocol = client.pole_json_lineprotocol_tmp(req)
+            client.write_points(line_protocol)
+        except Exception as e:
+            return jsonify({'error': f'{e}'}), 500
     return jsonify()
 
 
