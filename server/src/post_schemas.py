@@ -90,5 +90,5 @@ pole_post: PolePost = \
 
 print(CarPost(**car_post))
 print(PolePost(**pole_post))
-car_post_s = CarSchem(**car_post)
+car_post_s = CarPost(**car_post)
 print(asdict(car_post_s))
