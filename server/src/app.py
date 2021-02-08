@@ -9,6 +9,7 @@ from flask import Flask, jsonify, request, abort
 import rrt1
 import sokuchi_field
 import post_schemas
+import pole_calc
 from utils import IoTPoleDBClient
 
 
@@ -72,7 +73,7 @@ def pole():
             f.write(f'{write_json},\n')
         # 座標変換＋DBに記録
         try:
-            line_protocol = client.pole_json_lineprotocol_tmp(req)
+            line_protocol = client.pole_json_lineprotocol(req)
             client.write_points(line_protocol)
         except Exception as e:
             return jsonify({'error': f'{e}'}), 500
