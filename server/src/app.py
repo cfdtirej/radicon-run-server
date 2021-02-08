@@ -96,4 +96,4 @@ def hello():
     return jsonify(rrt1.main(car_id, dt, field_x, field_y))
 
 if __name__ == '__main__':
-    app.run(**conf['dev'])
+    app.run(**conf['Server'])

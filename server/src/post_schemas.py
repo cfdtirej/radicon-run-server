@@ -88,7 +88,8 @@ pole_post: PolePost = \
     }
 }
 
-print(CarPost(**car_post))
-print(PolePost(**pole_post))
-car_post_s = CarPost(**car_post)
-print(asdict(car_post_s))
+if __name__ == '__main__':
+    print(CarPost(**car_post))
+    print(PolePost(**pole_post))
+    car_post_s = CarPost(**car_post)
+    print(asdict(car_post_s))

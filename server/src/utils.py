@@ -62,7 +62,7 @@ class IoTPoleDBClient(InfluxDBClient):
                 'object_name': reqest_json['Position']['COM1']['Object_name']
             },
             'fields': {
-                **request_json['Position']['COM1'],
+                **reqest_json['Position']['COM1'],
                 **obstacle_xy
             }
         }]
@@ -72,11 +72,11 @@ class IoTPoleDBClient(InfluxDBClient):
     @classmethod
     def _pole_json_lineprotocol_tmp(cls, request_json) -> List[dict]:
         line_protocol = [{
-            'time': to_rfc3339(request_json['DateTime'])
+            'time': to_rfc3339(request_json['DateTime']),
             'measurement': 'obstacle',
             'tags': {
-                'pole_id': reqest_json['PoleID'],
-                'object_name': reqest_json['Position']['COM1']['Object_name']
+                'pole_id': request_json['PoleID'],
+                'object_name': request_json['Position']['COM1']['Object_name']
             },
             'fields': {
                 **request_json['Position']['COM1']
