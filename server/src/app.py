@@ -30,15 +30,8 @@ def home():
 @app.route('/car', methods=['GET', 'POST'])
 def car():
     if request.method == "GET":
-        car_id = request.args.get('car_id')
-        data = list(client.query('SELECT * FROM mobile LIMIT 1'))[0][0]
-        sokuchi_x = (data["GRSS_RTK_x"])
-        sokuchi_y = (data["GRSS_RTK_y"])
-        dt = (data["time"])
-        a, b = sokuchi_field.sokuchi_field(sokuchi_x,sokuchi_y)
-        field_x = a
-        field_y = b
-        return jsonify(rrt1.main(car_id, dt, field_x, field_y))
+        res = list(client.query("SELECT * FROM mobile ORDER BY DESC LIMIT 10"))[0]
+        return jsonify({'Data': res})
 
     elif request.method == 'POST':
         req: post_schemas.CarPost = request.get_json()
@@ -59,9 +52,12 @@ def car():
             return jsonify({'error': f'{e}'}), 500
 
 
-@app.route('/pole', methods=['POST'])
+@app.route('/pole', methods=['GET', 'POST'])
 def pole():
-    if request.method == 'POST':
+    if request.method == 'GET':
+        res = list(client.query("SELECT * FROM obstacle ORDER BY DESC LIMIT 10"))[0]
+        return jsonify({'Data': res})
+    elif request.method == 'POST':
         req: post_schemas.PolePost = request.get_json()
         # post jsonを記録（日毎）
         DATE = date.today().isoformat().replace('-', '')

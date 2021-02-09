@@ -52,17 +52,21 @@ class IoTPoleDBClient(InfluxDBClient):
         return line_protocol
 
     @classmethod
-    def pole_json_lineprotocol(cls, reqest_json: dict) -> List[dict]:
-        obstacle_xy = pole_calc.pole_obstacle_xy
+    def pole_json_lineprotocol(cls, request_json: dict) -> List[dict]:
+        obstacle_xy = pole_calc.pole_obstacle_xy(
+            pole_id=request_json['poleID'],
+            distance=request_json['Position']['COM1']['Object_name'],
+            angle=request_json['Position']['COM1']['Angle'])
         line_protocol = [{
-            'time': to_rfc3339(reqest_json['DateTime']),
+            'time': to_rfc3339(request_json['DateTime']),
             'measurement': 'obstacle',
             'tags': {
-                'pole_id': reqest_json['Position']['COM1']['PoleID'],
-                'object_name': reqest_json['Position']['COM1']['Object_name']
+                'pole_id': request_json['poleID'],
+                'object_name': request_json['Position']['COM1']['Object_name']
             },
             'fields': {
-                **reqest_json['Position']['COM1'],
+                'pole_id': request_json['poleID'],
+                **request_json['Position']['COM1'],
                 **obstacle_xy
             }
         }]
@@ -110,3 +114,17 @@ class IoTPoleDBClient(InfluxDBClient):
         }]
         return line_protocol
         
+if __name__ == '__main__':
+    request_json = {
+        'poleID': 1,
+        'DateTime': str(datetime.now()),
+        "Position": {
+            'COM1': {
+                'Object_name': 1,
+                "Size" : 250,
+                "Distance" : 300,
+                "Angle" : 75
+            }
+        }
+    }
+    print(IoTPoleDBClient.pole_json_lineprotocol(request_json))

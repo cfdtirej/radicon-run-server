@@ -4,6 +4,7 @@ log_post
 test
 
 config.yaml
+client_config.yaml
 
 database/influxdb
 database/grafana
