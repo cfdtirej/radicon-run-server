@@ -71,9 +71,9 @@ def pole():
         try:
             line_protocol = client.pole_json_lineprotocol(req)
             client.write_points(line_protocol)
+            return jsonify({'Data':line_protocol})
         except Exception as e:
             return jsonify({'error': f'{e}'}), 500
-    return jsonify()
 
 
 
