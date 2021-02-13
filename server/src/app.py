@@ -55,10 +55,13 @@ def car():
 @app.route('/pole', methods=['GET', 'POST'])
 def pole():
     if request.method == 'GET':
-        res = list(client.query("SELECT * FROM obstacle ORDER BY DESC LIMIT 10"))[0]
-        return jsonify({'Data': res})
+        res = list(client.query("SELECT * FROM obstacle ORDER BY DESC LIMIT 10"))
+        if len(res) == 0:
+            return jsonify({'Data': res})
+        else:
+            return jsonify({'Data': res[0]})
     elif request.method == 'POST':
-        req: post_schemas.PolePost = request.get_json()
+        req = request.get_json()
         # post jsonを記録（日毎）
         DATE = date.today().isoformat().replace('-', '')
         post_log = Path(__file__).parents[2]/'pole_log'/f'{DATE}_post'

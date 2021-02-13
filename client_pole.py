@@ -24,4 +24,5 @@ post_json = {
 conf_yaml = Path(__file__).parent/'client_config.yaml'
 with open(conf_yaml, 'r') as f:
     conf = yaml.safe_load(f)
-    requests.post(url=conf['polePost'], json=post_json)
+    res = requests.post(url=conf['polePost'], json=post_json)
+    print(res, res.headers)
