@@ -65,7 +65,6 @@ class IoTPoleDBClient(InfluxDBClient):
                 'object_name': request_json['Position']['COM1']['Object_name']
             },
             'fields': {
-                'pole_id': request_json['poleID'],
                 'angle': request_json['Position']['COM1']['Angle'],
                 'size': request_json['Position']['COM1']['Size'],
                 'distance': request_json['Position']['COM1']['Distance'],
