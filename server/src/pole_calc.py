@@ -1,21 +1,38 @@
 import json
-from typing import List, Dict, Union
 from pathlib import Path
+from typing import List, Dict, Union
+import math
 
 import numpy as np
 
 
-APPOS_JSON = Path(__file__).parent/'APPOS.json'
+APPOS_JSON = Path(__file__).parent / 'APPOS.json'
 
 
-def pole_obstacle_xy(pole_id: int, distance: float, angle: float) -> Dict[str, float]:
-    with open(APPOS_JSON, 'r') as f:
-        appos = json.load(f)['AP Pos']
-    for pos in appos:
-        if pos['Pole id '] == pole_id:
-            x = pos['Position '][0] + distance * np.cos(angle)
-            y = pos['Position '][1] + distance * np.sin(angle)
-            return {'x': x, 'y': y}
+def pole_obstacle_xy(pole_id: int, distance: Union[int, float], angle: Union[int, float]) -> Dict[str, float]:
+    distance = distance / 100
+    appos_json = Path(__file__).parent / 'APPOS.json'
+    with open(appos_json, 'r') as f:
+       appos = json.load(f)['AP Pos']
+    if pole_id == 1:
+        x1, y1 = appos[0]['Position ']
+        x2, y2 = appos[2]['Position ']
+    elif pole_id == 2:
+        x1, y1 = appos[1]['Position ']
+        x2, y2 = appos[0]['Position ']
+    elif pole_id == 3:
+        x1, y1 = appos[2]['Position ']
+        x2, y2 = appos[1]['Position ']
+    alpha = math.atan2(y1-y2, x1-x2)
+    u = distance * math.cos(angle)
+    v = distance * math.sin(angle)
+    obstacle_xy = np.array([
+        [math.cos(alpha), -math.sin(alpha)],
+        [math.sin(alpha), math.cos(alpha)]
+    ]) @ np.array([u,v]) + np.array([x1, y1])
+    
+    return {'x': obstacle_xy[0], 'y': obstacle_xy[1]}
+
 
 if __name__ == '__main__':
     from datetime import datetime
